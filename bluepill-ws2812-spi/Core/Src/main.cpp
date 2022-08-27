@@ -52,8 +52,8 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-std::function<void (uint8_t*, uint32_t)> spiwrite = (std::bind(&HAL_UART_Transmit, &huart1, std::placeholders::_1 , std::placeholders::_2, 100));
-WS2812<numleds> leds(&spiwrite));
+auto spiwrite = std::bind(&HAL_SPI_Transmit, &huart1, std::placeholders::_1 , std::placeholders::_2, 100);
+WS2812<numleds> leds(spiwrite);
 
 const RGB_t<uint8_t>	violet	( 75,   0, 130);
 const RGB_t<uint8_t>	blue	  (  0,   0, 255);

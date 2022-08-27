@@ -38,35 +38,6 @@ class WS2812{
       for (int currentled = 0; currentled < LENGTH; currentled++){
 
         for(int i = 0; i < 8; i++){
-        	/*    if(pixels[currentled].g & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	      // red
-	      for(int i = 0; i < 8; i++){
-	        if(pixels[currentled].r & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	      // blue
-	      for(int i = 0; i < 8; i++){
-	        if(pixels[currentled].b & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	    }*/
           buf[currentled*24 + i + 0] = pixels[currentled].g & (1 << i) ? ONE_BITS : ZERO_BITS;
           buf[currentled*24 + i + 8] = pixels[currentled].r & (1 << i) ? ONE_BITS : ZERO_BITS;
           buf[currentled*24 + i +16] = pixels[currentled].b & (1 << i) ? ONE_BITS : ZERO_BITS;
