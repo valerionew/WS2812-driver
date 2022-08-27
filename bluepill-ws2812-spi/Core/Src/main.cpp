@@ -52,7 +52,15 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-auto spiwrite = std::bind(&HAL_SPI_Transmit, &huart1, std::placeholders::_1 , std::placeholders::_2, 100);
+
+//
+// USER: change the binding to pass a std::function<void(uint8_t*, uint32_t)> to the constructor that writes on the SPI.
+// you can use a lambda function:
+// std::function<void(uint8_t*, uint32_t)> spiwrite = [] (uint8_t* data, uint32_t length) {HAL_SPI_Transmit(&hspi1, data, length, 100);};
+// as well as std::bind
+ std::function<void(uint8_t*, uint32_t)> spiwrite = std::bind(&HAL_SPI_Transmit, &hspi1, std::placeholders::_1 , std::placeholders::_2, 100);
+
+
 WS2812<numleds> leds(spiwrite);
 
 const RGB_t<uint8_t>	violet	( 75,   0, 130);

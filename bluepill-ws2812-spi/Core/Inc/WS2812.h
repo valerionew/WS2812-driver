@@ -4,6 +4,7 @@
 #include <RGB.h>
 #include "stdint.h"
 #include <array>
+#include <functional>
 
 namespace WSCONST{
   constexpr uint8_t WS2812B_MAX_LEDS = 255;
@@ -21,17 +22,11 @@ class WS2812{
     RGB_t<uint8_t> pixels[LENGTH];
     uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
 
-    // function pointer to the hardware SPI function
-    void (*spi_transfer)(const uint8_t* data, const uint32_t length); // to be set by the user, with function binding if necessary
-    void (*spi_init)(void); // to be set by the user if needed
+  // Object for SPI communication  
+    std::function<void(uint8_t*, uint16_t)> spi_transfer;
+
   public:
-    WS2812(void (*spi_transfer)(const uint8_t* data, const uint32_t length), void (*spi_init)(void)) : spi_transfer(spi_transfer), spi_init(spi_init){
-      for (int i = 0; i < LENGTH; i++) {
-        pixels[i] = RGB_t<uint8_t>(0, 0, 0);
-      }
-      spi_init();
-    }
-    WS2812(void (*spi_transfer)(const uint8_t* data, const uint32_t length)) : spi_transfer(spi_transfer){
+    WS2812(std::function<void(uint8_t*, uint16_t)> spi_transfer) : spi_transfer(spi_transfer){
       for (int i = 0; i < LENGTH; i++) {
         pixels[i] = RGB_t<uint8_t>(0, 0, 0);
       }
