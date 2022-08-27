@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "string.h"
+#include <functional> // bind
 
 
 /* USER CODE END Includes */
@@ -51,8 +52,8 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
-WS2812<numleds> leds;
+std::function<void (uint8_t*, uint32_t)> spiwrite = (std::bind(&HAL_UART_Transmit, &huart1, std::placeholders::_1 , std::placeholders::_2, 100));
+WS2812<numleds> leds(&spiwrite));
 
 const RGB_t<uint8_t>	violet	( 75,   0, 130);
 const RGB_t<uint8_t>	blue	  (  0,   0, 255);
@@ -143,9 +144,6 @@ int main(void)
 		  leds.setPixel(i+17, red);*/
 		  leds.show();
 
-      uint8_t reset = 0; // reset
-      HAL_SPI_Transmit(&hspi1, &reset, 1, 100);
-      HAL_SPI_Transmit(&hspi1, leds.bitsbuffer, numleds*24, 100);
 		  HAL_Delay(20);
 	  }
 	  for(int i= numleds-5; i > 0; i--){
@@ -170,11 +168,11 @@ int main(void)
 		  leds.setPixel(i+17, red);*/
 		  leds.show();
 
-      uint8_t reset = 0; // reset
-      HAL_SPI_Transmit(&hspi1, &reset, 1, 100);
-      HAL_SPI_Transmit(&hspi1, leds.bitsbuffer, numleds*24, 100);
+
 		  HAL_Delay(20);
 		  }
+
+
 
     /* USER CODE END WHILE */
 
