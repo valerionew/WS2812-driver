@@ -32,6 +32,7 @@ class WS2812{
       }
     }
     void setPixel(const int index, const RGB_t<uint8_t> color) {
+    	// it should really check that index is a valid index for the array
       pixels[index] = color;
     }
     void show() {
