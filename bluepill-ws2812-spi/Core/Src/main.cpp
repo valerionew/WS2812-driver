@@ -139,11 +139,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  {
-	 char message[100];
-	 int message_length = snprintf(message,100, "init\r\n");
-	 HAL_UART_Transmit(&huart1, (uint8_t*) message, message_length, 100);
-  }
 
   /* USER CODE END 2 */
 
@@ -229,8 +224,8 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_LSB;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi1.Init.CRCPolynomial = 10;
