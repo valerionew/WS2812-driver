@@ -4,6 +4,7 @@
 #include <RGB.h>
 #include "stdint.h"
 #include <array>
+#include <functional>
 
 namespace WSCONST{
   constexpr uint8_t WS2812B_MAX_LEDS = 255;
@@ -18,17 +19,19 @@ namespace WSCONST{
 template<const int LENGTH>
 class WS2812{
   private:
-    // function pointer to the hardware SPI function
-    void spi_transfer(uint8_t* data, uint8_t length); // could we use a bind function here?
+    std::array<RGB_t<uint8_t>, LENGTH> pixels;
+    uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
+
+  // Object for SPI communication  
+    std::function<void(uint8_t*, uint16_t)> spi_transfer;
+
   public:
-    WS2812() {
+    WS2812(std::function<void(uint8_t*, uint16_t)> spi_transfer) : spi_transfer(spi_transfer){
       for (int i = 0; i < LENGTH; i++) {
         pixels[i] = RGB_t<uint8_t>(0, 0, 0);
       }
     }
-    RGB_t<uint8_t> pixels[LENGTH];
-    uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
-    void setPixel(int index, RGB_t<uint8_t> color) {
+    void setPixel(const int index, const RGB_t<uint8_t> color) {
       pixels[index] = color;
     }
     void show() {
@@ -43,6 +46,10 @@ class WS2812{
           buf[currentled*24 + i +16] = pixels[currentled].b & (1 << i) ? ONE_BITS : ZERO_BITS;
           }
       }
+      spi_transfer(bitsbuffer, LENGTH * BITS_PER_LED + 1 + RESET_LENGTH);
+    }
+    void setFrame(const std::array<RGB_t<uint8_t>, LENGTH> colors) {
+        pixels = colors;
     }
     void clear() {
       for (int i = 0; i < LENGTH; i++) {
