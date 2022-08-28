@@ -18,7 +18,6 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <WS2812.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -26,6 +25,10 @@
 #include "stdio.h"
 #include "string.h"
 #include <functional> // bind
+
+#include "WS2812.h"
+#include <RGB.h>
+#include <Array>
 
 
 /* USER CODE END Includes */
@@ -48,17 +51,24 @@
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_tx;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
+std::array<RGB_t<uint8_t>, 6> rainbow;
+
 //
-// USER: change the binding to pass a std::function<void(uint8_t*, uint32_t)> to the constructor that writes on the SPI.
-// you can use a lambda function:
-// std::function<void(uint8_t*, uint32_t)> spiwrite = [] (uint8_t* data, uint32_t length) {HAL_SPI_Transmit(&hspi1, data, length, 100);};
-// as well as std::bind
- std::function<void(uint8_t*, uint32_t)> spiwrite = std::bind(&HAL_SPI_Transmit, &hspi1, std::placeholders::_1 , std::placeholders::_2, 100);
+// USER: change the binding to pass a std::function<void(uint8_t*data, uint32_t length)> to the constructor that writes on the SPI.
+// you can use a lambda function as well as std::bind
+// examples:
+// regular bind
+// std::function<void(uint8_t* data, uint32_t length)> spiwrite = std::bind(&HAL_SPI_Transmit, &hspi1, std::placeholders::_1 , std::placeholders::_2, 100);
+// lambda function
+// std::function<void(uint8_t*data, uint32_t length)> spiwrite = [] (uint8_t* data, uint32_t length) {HAL_SPI_Transmit(&hspi1, data, length, 100);};
+ // DMA bind
+ std::function<void(uint8_t* data, uint32_t length)> spiwrite = std::bind(&HAL_SPI_Transmit_DMA, &hspi1, std::placeholders::_1 , std::placeholders::_2);
 
 
 WS2812<numleds> leds(spiwrite);
@@ -76,6 +86,7 @@ const RGB_t<uint8_t>	red		  (255,   0,   0);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -93,6 +104,13 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+    rainbow[0] = violet;
+    rainbow[1] = blue;
+    rainbow[2] = green;
+    rainbow[3] = yellow;
+    rainbow[4] = orange;
+    rainbow[5] = red;
+
 
   /* USER CODE END 1 */
 
@@ -109,14 +127,17 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  MX_DMA_Init();
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
 
   {
 	 char message[100];
@@ -130,55 +151,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  for(int i= 0; i < numleds-5; i++){
-		  leds.clear();
-		  leds.setPixel(i+0, violet);
-		  leds.setPixel(i+1, blue);
-		  leds.setPixel(i+2, green);
-		  leds.setPixel(i+3, yellow);
-		  leds.setPixel(i+4, orange);
-		  leds.setPixel(i+5, red);
-		  /*leds.setPixel(i+6, violet);
-		  leds.setPixel(i+7, blue);
-		  leds.setPixel(i+8, green);
-		  leds.setPixel(i+9, yellow);
-		  leds.setPixel(i+10, orange);
-		  leds.setPixel(i+11, red);
-		  leds.setPixel(i+12, violet);
-		  leds.setPixel(i+13, blue);
-		  leds.setPixel(i+14, green);
-		  leds.setPixel(i+15, yellow);
-		  leds.setPixel(i+16, orange);
-		  leds.setPixel(i+17, red);*/
+	  for(int i = 6; i >0 ; i--){
+		  
+      for(int j = 0; j < numleds; j++){
+        leds.setPixel(j, rainbow[(j+i)%6]);
+      }
 		  leds.show();
+		  HAL_Delay(50);
 
-		  HAL_Delay(20);
-	  }
-	  for(int i= numleds-5; i > 0; i--){
-		  leds.clear();
-		  leds.setPixel(i+0, violet);
-		  leds.setPixel(i+1, blue);
-		  leds.setPixel(i+2, green);
-		  leds.setPixel(i+3, yellow);
-		  leds.setPixel(i+4, orange);
-		  leds.setPixel(i+5, red);
-		  /*leds.setPixel(i+6, violet);
-		  leds.setPixel(i+7, blue);
-		  leds.setPixel(i+8, green);
-		  leds.setPixel(i+9, yellow);
-		  leds.setPixel(i+10, orange);
-		  leds.setPixel(i+11, red);
-		  leds.setPixel(i+12, violet);
-		  leds.setPixel(i+13, blue);
-		  leds.setPixel(i+14, green);
-		  leds.setPixel(i+15, yellow);
-		  leds.setPixel(i+16, orange);
-		  leds.setPixel(i+17, red);*/
-		  leds.show();
-
-
-		  HAL_Delay(20);
-		  }
+		}
 
 
 
@@ -295,6 +276,22 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 
 }
 

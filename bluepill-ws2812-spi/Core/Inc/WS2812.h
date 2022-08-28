@@ -19,7 +19,7 @@ namespace WSCONST{
 template<const int LENGTH>
 class WS2812{
   private:
-    RGB_t<uint8_t> pixels[LENGTH];
+    std::array<RGB_t<uint8_t>, LENGTH> pixels;
     uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
 
   // Object for SPI communication  
@@ -41,41 +41,15 @@ class WS2812{
       for (int currentled = 0; currentled < LENGTH; currentled++){
 
         for(int i = 0; i < 8; i++){
-        	/*    if(pixels[currentled].g & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	      // red
-	      for(int i = 0; i < 8; i++){
-	        if(pixels[currentled].r & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	      // blue
-	      for(int i = 0; i < 8; i++){
-	        if(pixels[currentled].b & (1 << i)){
-	          *buf = ONE_BITS;
-	        }
-	        else{
-	          *buf = ZERO_BITS;
-	        }
-	        buf++;
-	      }
-	    }*/
           buf[currentled*24 + i + 0] = pixels[currentled].g & (1 << i) ? ONE_BITS : ZERO_BITS;
           buf[currentled*24 + i + 8] = pixels[currentled].r & (1 << i) ? ONE_BITS : ZERO_BITS;
           buf[currentled*24 + i +16] = pixels[currentled].b & (1 << i) ? ONE_BITS : ZERO_BITS;
           }
       }
       spi_transfer(bitsbuffer, LENGTH * BITS_PER_LED + 1 + RESET_LENGTH);
+    }
+    void setFrame(const std::array<RGB_t<uint8_t>, LENGTH> colors) {
+        pixels = colors;
     }
     void clear() {
       for (int i = 0; i < LENGTH; i++) {
