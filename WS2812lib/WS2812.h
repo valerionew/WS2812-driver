@@ -12,8 +12,8 @@ namespace WSCONST{
   constexpr uint8_t WORDS_PER_LED = 3;
   constexpr uint8_t BITS_PER_LED = BITS_PER_WORD * WORDS_PER_LED;
   constexpr uint8_t RESET_LENGTH = 3;
-  constexpr uint8_t ZERO_BITS = 0b11000000;
-  constexpr uint8_t ONE_BITS = 0b11111100;
+  constexpr uint8_t ZERO_BITS = 0b10000000;
+  constexpr uint8_t ONE_BITS  = 0b11111100;
 }
 
 template<const int LENGTH>
