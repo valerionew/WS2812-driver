@@ -28,7 +28,7 @@
 
 #include "WS2812.h"
 #include <RGB.h>
-#include <Array>
+#include <array>
 
 
 /* USER CODE END Includes */
@@ -79,6 +79,7 @@ const RGB_t<uint8_t>	green	  (  0, 255,   0);
 const RGB_t<uint8_t>	yellow	(127, 255,   0);
 const RGB_t<uint8_t>	orange	(255,  50,   0);
 const RGB_t<uint8_t>	red		  (255,   0,   0);
+const RGB_t<uint8_t>	white		  (255,   255,   255);
 
 /* USER CODE END PV */
 
@@ -148,9 +149,9 @@ int main(void)
   {
 	  for(int i = 6; i >0 ; i--){
 
-      for(int j = 0; j < numleds; j++){
-        leds.setPixel(j, rainbow[(j+i)%6]);
-      }
+		  for(int j = 0; j < numleds; j++){
+			leds.setPixel(j, rainbow[(j+i)%6]);
+		  }
 		  leds.show();
 		  HAL_Delay(50);
 
