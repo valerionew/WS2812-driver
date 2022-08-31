@@ -20,7 +20,7 @@ template<const int LENGTH>
 class WS2812{
   private:
     std::array<RGB_t<uint8_t>, LENGTH> pixels;
-    uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
+    volatile uint8_t bitsbuffer[LENGTH * WSCONST::BITS_PER_LED + 1 + WSCONST::RESET_LENGTH]; // we use 1 byte per bit
 
   // Object for SPI communication  
     std::function<void(uint8_t*, uint16_t)> spi_transfer;
