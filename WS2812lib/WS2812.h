@@ -35,7 +35,6 @@ class WS2812{
     	// it should really check that index is a valid index for the array
 
       using namespace WSCONST;
-
       for(int i = 0; i < 8; i++){
         bitsbuffer[index*24 + i + 0] = color.g & (1 << i) ? ONE_BITS : ZERO_BITS;
         bitsbuffer[index*24 + i + 8] = color.r & (1 << i) ? ONE_BITS : ZERO_BITS;
