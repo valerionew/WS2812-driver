@@ -1,3 +1,6 @@
 [submodule "miosix-kernel"]
 	path = miosix-kernel
 	url = https://github.com/valerionew/miosix-kernel
+[submodule "aos-project-report"]
+	path = aos-project-report
+	url = https://github.com/valerionew/aos-project-report.git
