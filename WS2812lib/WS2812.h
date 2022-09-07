@@ -44,9 +44,16 @@ class WS2812{
     void show() {      
       using namespace WSCONST;
 
+      /*uint8_t zeros[50];
+      std::fill_n(zeros, 50, 0);
+      spi_transfer(zeros, 1); // clear the bit first*/
+      
       uint8_t zero = 0;
       spi_transfer(&zero, 1); // clear the bit first
+      
       spi_transfer((uint8_t*)bitsbuffer, LENGTH * BITS_PER_LED + 1 + RESET_LENGTH);
+      // to be tested
+      // spi_transfer(zeros, 50); //reset
 
     }
 
