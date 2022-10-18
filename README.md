@@ -1,5 +1,7 @@
 # WS2812 driver
 
+![demo.gif](demo.gif)
+
 Upload with serial to the bluepill:
 1. Set boot0 to 1
 1. Leave boot1 to 0
